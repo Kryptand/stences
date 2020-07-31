@@ -1,0 +1,43 @@
+{
+  "name": "stences",
+  "private": true,
+  "version": "0.0.1",
+  "description": "stences",
+  "license": "MIT",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "stencil": "stencil",
+    "build": "stencil build",
+    "start": "stencil build --dev --watch --serve",
+    "test": "stencil test --spec --e2e",
+    "test.watch": "stencil test --spec --e2e --watch",
+    "generate": "stencil generate",
+    "prettier-watch": "onchange 'src/**/*{.ts,.tsx}' -- prettier --write {{changed}}",
+    "lint": "eslint src/**/*{.ts,.tsx}",
+    "lint-and-fix": "eslint src/**/*{.ts,.tsx} --fix"
+  },
+  "devDependencies": {
+    "@abraham/reflection": "^0.7.0",
+    "@ionic/core": "^5.0.7",
+    "@stencil/core": "^1.12.2",
+    "@stencil/eslint-plugin": "^0.3.1",
+    "@typescript-eslint/eslint-plugin": "^3.7.1",
+    "@typescript-eslint/parser": "^3.7.1",
+    "eslint": "^7.5.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.20.5",
+    "onchange": "^7.0.2",
+    "prettier": "2.0.5",
+    "reflect-metadata": "^0.1.13",
+    "workbox-build": "4.3.1"
+  },
+  "dependencies": {
+    "rxjs": "^6.6.2",
+    "@types/jest": "^26.0.7",
+    "http-server": "^0.12.3",
+    "tsyringe": "^4.3.0"
+  }
+}
