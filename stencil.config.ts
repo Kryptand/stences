@@ -6,14 +6,16 @@ export const config: Config = {
   globalScript: "src/global/app.ts",
   globalStyle: "src/global/app.css",
   taskQueue: "async",
+  namespace: "kryptand",
   outputTargets: [
     {
-      type: 'www',
+      type: "dist",
+    },
+    {
+      type: "www",
       serviceWorker: {
-        globPatterns: [
-          '**/*.{js,css,json,html,ico,png}'
-        ]
-      }
+        globPatterns: ["**/*.{js,css,json,html,ico,png}"],
+      },
     },
     {
       type: "www",
