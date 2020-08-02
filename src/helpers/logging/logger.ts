@@ -43,7 +43,7 @@ export class HttpLogSink implements BatchLogSink {
   }
 
   addToSink(logEntry: LogEntry) {
-    
+
   }
 }
 export class ConsoleLogSink implements SingleLogSink {
