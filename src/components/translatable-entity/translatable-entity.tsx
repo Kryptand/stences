@@ -15,12 +15,14 @@ import { Subscription } from "rxjs";
 })
 export class TranslatableEntity implements ComponentInterface {
   @Prop() name: string;
-  @State() value: string;
+  @Prop() value: any;
+  @State() currValue: string;
   private subscription: Subscription;
   componentWillLoad() {
-    this.subscription = TranslatorInstance.translate$(this.name).subscribe(
-      (value) => (this.value = value)
-    );
+    this.subscription = TranslatorInstance.translate$(
+      this.name,
+      this.value
+    ).subscribe((value) => (this.currValue = value));
   }
   disconnectedCallback() {
     if (!this.subscription) {
@@ -30,6 +32,6 @@ export class TranslatableEntity implements ComponentInterface {
   }
 
   render() {
-    return <Host innerHTML={this.value}></Host>;
+    return <Host innerHTML={this.currValue}></Host>;
   }
 }

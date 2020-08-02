@@ -8,10 +8,15 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface AppRoot {
     }
+    interface HomePage {
+    }
     interface KryptandT {
         "name": string;
+        "value": any;
     }
     interface SelectLanguage {
+    }
+    interface TestPage {
     }
 }
 declare global {
@@ -20,6 +25,12 @@ declare global {
     var HTMLAppRootElement: {
         prototype: HTMLAppRootElement;
         new (): HTMLAppRootElement;
+    };
+    interface HTMLHomePageElement extends Components.HomePage, HTMLStencilElement {
+    }
+    var HTMLHomePageElement: {
+        prototype: HTMLHomePageElement;
+        new (): HTMLHomePageElement;
     };
     interface HTMLKryptandTElement extends Components.KryptandT, HTMLStencilElement {
     }
@@ -33,24 +44,39 @@ declare global {
         prototype: HTMLSelectLanguageElement;
         new (): HTMLSelectLanguageElement;
     };
+    interface HTMLTestPageElement extends Components.TestPage, HTMLStencilElement {
+    }
+    var HTMLTestPageElement: {
+        prototype: HTMLTestPageElement;
+        new (): HTMLTestPageElement;
+    };
     interface HTMLElementTagNameMap {
         "app-root": HTMLAppRootElement;
+        "home-page": HTMLHomePageElement;
         "kryptand-t": HTMLKryptandTElement;
         "select-language": HTMLSelectLanguageElement;
+        "test-page": HTMLTestPageElement;
     }
 }
 declare namespace LocalJSX {
     interface AppRoot {
     }
+    interface HomePage {
+    }
     interface KryptandT {
         "name"?: string;
+        "value"?: any;
     }
     interface SelectLanguage {
     }
+    interface TestPage {
+    }
     interface IntrinsicElements {
         "app-root": AppRoot;
+        "home-page": HomePage;
         "kryptand-t": KryptandT;
         "select-language": SelectLanguage;
+        "test-page": TestPage;
     }
 }
 export { LocalJSX as JSX };
@@ -58,8 +84,10 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "app-root": LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
+            "home-page": LocalJSX.HomePage & JSXBase.HTMLAttributes<HTMLHomePageElement>;
             "kryptand-t": LocalJSX.KryptandT & JSXBase.HTMLAttributes<HTMLKryptandTElement>;
             "select-language": LocalJSX.SelectLanguage & JSXBase.HTMLAttributes<HTMLSelectLanguageElement>;
+            "test-page": LocalJSX.TestPage & JSXBase.HTMLAttributes<HTMLTestPageElement>;
         }
     }
 }

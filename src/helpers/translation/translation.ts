@@ -1,7 +1,12 @@
 import { BehaviorSubject } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
-import { TranslationEntries, TranslationEntry } from "./translation-entry";
+import {
+  LanguageScopedTranslationEntry,
+  TranslationEntries,
+  TranslationEntry,
+} from "./translation-entry";
 import { TranslationLoader } from "./translation-loader";
+import { Transpiler } from "./transpiler";
 
 export class Translator {
   private defaultLangSub$: BehaviorSubject<string> = new BehaviorSubject<
@@ -32,33 +37,66 @@ export class Translator {
   }
 
   private translationEntriesSub$: BehaviorSubject<
-    TranslationEntries
-  > = new BehaviorSubject<TranslationEntries>(new Map());
+    LanguageScopedTranslationEntry
+  > = new BehaviorSubject<LanguageScopedTranslationEntry>(new Map());
   readonly translationEntries$ = this.translationEntriesSub$.asObservable();
 
-  get translationEntries(): TranslationEntries {
+  get translationEntries(): LanguageScopedTranslationEntry {
     return this.translationEntriesSub$.getValue();
   }
 
-  set translationEntries(value: TranslationEntries) {
+  set translationEntries(value: LanguageScopedTranslationEntry) {
     this.translationEntriesSub$.next(value);
   }
-
-  readonly translate$ = (key: string) =>
+  readonly translate = (key: string, value?: any) => {
+    this.transpileValues(this.translationEntries, key, value);
+  };
+  readonly translate$ = (key: string, value?: any) =>
     this.translationEntries$.pipe(
-      map((translationValues) => translationValues.get(key))
+      map((translationValues) => {
+        if (translationValues == null) {
+          return key;
+        }
+        return this.transpileValues(translationValues, key, value);
+      })
     );
 
-  addTranslationEntries(...translationEntries: TranslationEntry[]) {
+  private transpileValues(
+    translationValues: Map<string, TranslationEntries>,
+    key: string,
+    value: any
+  ) {
+    const currTranslationValues = translationValues.get(this.currentLang);
+    if (currTranslationValues == null) {
+      return key;
+    }
+    const translatedString = currTranslationValues.get(key);
+    if (translatedString == null) {
+      return key;
+    }
+    return this.transpiler.transform(translatedString, value);
+  }
+
+  addTranslationEntries(
+    translationEntries: TranslationEntry[],
+    lang = this.currentLang
+  ) {
+    const currTranslations = this.translationEntries.get(lang);
     translationEntries.forEach((translationEntry) => {
-      this.translationEntries.set(translationEntry.key, translationEntry.value);
+      currTranslations.set(translationEntry.key, translationEntry.value);
     });
+    this.translationEntries.set(lang, currTranslations);
+    this.reloadTranslationsSub$.next();
   }
 
   private reloadTranslationsSub$: BehaviorSubject<void> = new BehaviorSubject<
     void
   >(null);
-  constructor(private loader: TranslationLoader, defaultLanguage: string) {
+  constructor(
+    private loader: TranslationLoader,
+    private transpiler: Transpiler,
+    defaultLanguage: string
+  ) {
     this.defaultLang = defaultLanguage;
     this.currentLang = defaultLanguage;
   }
@@ -68,7 +106,9 @@ export class Translator {
       switchMap(() => this.loader.fetchTranslations(this.currentLang))
     );
     translations.subscribe((translationEntries) => {
-      this.translationEntries = translationEntries;
+      const translations = new Map();
+      translations.set(this.currentLang, translationEntries);
+      this.translationEntries = translations;
     });
   }
 }
