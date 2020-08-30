@@ -1,11 +1,11 @@
-import { Component, Host, h } from "@stencil/core";
+import { Component, h, Host } from "@stencil/core";
+import { TranslatorInstance } from "../../helpers/translation/translation";
 import { TranslationEntry } from "../../helpers/translation/translation-entry";
-import { TranslatorInstance } from "../../global/app";
 
 @Component({
   tag: "home-page",
   styleUrl: "home-page.css",
-  shadow: true,
+  shadow: true
 })
 export class HomePage {
   loadDynamicTranslation() {

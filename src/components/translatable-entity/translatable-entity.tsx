@@ -1,13 +1,6 @@
-import {
-  Component,
-  ComponentInterface,
-  Host,
-  h,
-  Prop,
-  State,
-} from "@stencil/core";
-import { TranslatorInstance } from "../../global/app";
+import { Component, ComponentInterface, h, Host, Prop, State } from "@stencil/core";
 import { Subscription } from "rxjs";
+import { TranslatorInstance } from "../../helpers/translation/translation";
 
 @Component({
   tag: "kryptand-t",

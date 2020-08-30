@@ -1,13 +1,14 @@
-import { Component, ComponentInterface, Host, h, State } from "@stencil/core";
-import { TranslatorInstance } from "../../global/app";
+import { Component, ComponentInterface, h, Host, State } from "@stencil/core";
+import { TranslatorInstance } from "../../helpers/translation/translation";
 
 @Component({
   tag: "select-language",
   styleUrl: "select-language.css",
-  shadow: true,
+  shadow: true
 })
 export class SelectLanguage implements ComponentInterface {
   @State() selectedLang: string;
+
   componentWillLoad() {
     TranslatorInstance.currentLang$.subscribe(
       (currentLang) => (this.selectedLang = currentLang)

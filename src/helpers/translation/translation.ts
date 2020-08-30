@@ -1,21 +1,17 @@
 import { BehaviorSubject } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
-import {
-  LanguageScopedTranslationEntry,
-  TranslationEntries,
-  TranslationEntry,
-} from "./translation-entry";
-import { TranslationLoader } from "./translation-loader";
-import { Transpiler } from "./transpiler";
+import { LanguageScopedTranslationEntry, TranslationEntries, TranslationEntry } from "./translation-entry";
+import { DefaultTranslationLoader, TranslationLoader } from "./translation-loader";
+import { DefaultTranspiler, Transpiler } from "./transpiler";
 
 export class Translator {
-  private defaultLangSub$: BehaviorSubject<string> = new BehaviorSubject<
-    string
-  >(null);
+  private defaultLangSub$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   readonly defaultLang$ = this.defaultLangSub$.getValue();
+
   get defaultLang() {
     return this.defaultLangSub$.getValue();
   }
+
   set defaultLang(lang: string) {
     this.defaultLangSub$.next(lang);
   }
@@ -112,3 +108,9 @@ export class Translator {
     });
   }
 }
+
+export const TranslatorInstance = new Translator(
+  new DefaultTranslationLoader(),
+  new DefaultTranspiler(),
+  "de-DE"
+);

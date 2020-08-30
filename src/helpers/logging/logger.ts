@@ -1,67 +1,19 @@
-import { BehaviorSubject, Observable } from "rxjs";
-export enum LogLevel {
-  TRACE = 0,
-  DEBUG = 1,
-  INFO = 2,
-  LOG = 3,
-  WARN = 4,
-  ERROR = 5,
-  FATAL = 6,
-  OFF = 7,
-}
-export interface LogEntry {
-  level: LogLevel;
-  timestamp: string;
-  message: string;
-  additional: any[];
-}
-export interface LogTransformer {
-  transform(logEntry): LogEntry;
-}
-const applyTransformers = (
-  logEntry: LogEntry,
-  transformers: LogTransformer[]
-) => {
-  let entry = logEntry;
-  transformers.forEach((transformer) => {
-    entry = transformer.transform(logEntry);
-  });
-  return entry;
-};
-export interface BatchLogSink extends LogSink {
-  emitBatch(logEntries: LogEntry[]);
-}
-export interface SingleLogSink extends LogSink {
-  emit(logEntry: LogEntry);
-}
-export interface LogSink {
-  addToSink(logEntry: LogEntry);
-}
-export class HttpLogSink implements BatchLogSink {
-  emitBatch(logEntries: LogEntry[]) {
-    logEntries;
-  }
+import { BehaviorSubject } from "rxjs";
+import { LogEntry } from "./types/log-entry";
+import { LogTransformer } from "./types/log-transformer";
+import { LogSink } from "./types/log-sink";
+import { applyTransformers, emitToPipeline } from "./utils";
 
-  addToSink(logEntry: LogEntry) {
-
-  }
-}
-export class ConsoleLogSink implements SingleLogSink {
-  emit(logEntry: LogEntry) {
-    console.debug(logEntry);
-  }
-
-  addToSink(logEntry: LogEntry) {
-  }
-}
 export class Logger {
-  private logTransformerSub$: BehaviorSubject<
-    LogTransformer[]
-  > = new BehaviorSubject<LogTransformer[]>([]);
+  private logSinkSub$: BehaviorSubject<LogSink[]> = new BehaviorSubject<LogSink[]>([]);
+  logSinks$ = this.logSinkSub$.asObservable();
+  private logTransformerSub$: BehaviorSubject<LogTransformer[]> = new BehaviorSubject<LogTransformer[]>([]);
   logTransformer$ = this.logTransformerSub$.asObservable();
+
   get logTransformer() {
     return this.logTransformerSub$.getValue();
   }
+
   set logTransformer(value: LogTransformer[]) {
     this.logTransformerSub$.next(value);
   }
@@ -87,7 +39,11 @@ export class Logger {
     const entries = logEntries.map((logEntry) =>
       applyTransformers(logEntry, this.logTransformer)
     );
+
     this.logEntriesSub$.next([...currentLogEntries, ...entries]);
+    entries.forEach((entry) =>
+      emitToPipeline(entry, this.logSinkSub$.getValue())
+    );
   }
   clearLogEntries() {
     this.logEntries = [];
